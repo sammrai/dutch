@@ -10,28 +10,15 @@
       <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.3.3/semantic.min.js"></script>
       <style>
          /*設定バー*/
-         /*.td:nth-child(2){*/
         .candidacy_one{
           margin: 1em;
         }
          .cost_stacker > span > .label{
-          /*font-weight: bold;*/
-         /*text-align: right !important;*/
          margin-bottom: 4px !important;
          }
-
          .cost_stacker {
-          /*float: left;*/
           text-align: left;
          }
-        .cost_stacker > span > .label{
-          /*font-weight: bold;*/
-         /*text-align: right !important;*/
-         /*margin-bottom: 4px*/
-         /*border: inset 3px #00B5AD;*/
-         /*border: solid 1px black !important;*/
-         }
-
          .summary td:nth-child(1){
          font-weight: bold;
          }
@@ -120,23 +107,29 @@
          #summary_board{
             /*overflow: hidden!important;*/
             /*height: 180px*/
+            padding-bottom: 2em;
         }
         
         .summary_card{
-          margin-bottom: 1.5em; 
-          margin-top: 1.5em; 
+          padding-bottom: 1.5em; 
+          padding-top: 1.5em; 
           }
 
           #showcandidacy{
             color: white;
           }
 
-          #summary_board > div > div.cost_stacker > span > div{
-            /*height:1px !important;*/
+          .cost_stacker > .item > .label{
             overflow: hidden;
-            /*padding: 2px !important;*/
             padding-bottom: 0.2em;
             padding-top: 0.2em;
+          }
+          .cost_stacker.help{
+            text-align: right;
+          }
+          #share{
+            margin-top: 1em;
+            text-align: center;
           }
 
       </style>
@@ -226,57 +219,41 @@
                <!-- <button class="ui button" type="exec">exec</button> -->
                
             </form>
-         </div>
-         <div class="eight wide column">
-          <div class="ui negative message" hidden id="error">
-  <div class="header">
-    エラー
-  </div>
-  <p>ネットワークに接続できません。またはAPIが一時的に利用できない状態にあります。
-</p></div>
+                   </div>
+                   <div class="eight wide column">
+                    <div class="ui negative message" hidden id="error">
+            <div class="header">
+              エラー
+            </div>
+            <p>ネットワークに接続できません。またはAPIが一時的に利用できない状態にあります。
+          </p></div>
 
-            <div class="ui segment" id="summary_board">
-              <div class="summary_card">
-               <div class="cost_stacker">
-                  <span class="item">
-                     <div class="ui teal image label" data-num=0>2<div class="detail">¥ 2,000</div></div>
-                  </span>
-                  <span class="item">
-                     <div class="ui teal image label" data-num=1 style="opacity: 0.5">8<div class="detail">¥ 1,000</div></div>
-                  </span>
-               </div>
 
-               <table class="ui very basic table unstackable summary">
+<div class="cost_stacker help"><span class="item"><div class="ui gray image label">人数<div class="detail">一人あたり支払額</div></div></span></div>
+
+            <div class="ui segment" id="summary_board"><div class="summary_card"><div class="cost_stacker"><span class="item"><div class="ui teal image label" data-num="0" >2<div class="detail">¥ 2,000</div></div></span><span class="item"><div class="ui teal image label" data-num="1" style="opacity: 0.5;">8<div class="detail">¥ 1,000</div></div></span></div><table class="ui very basic table unstackable summary">
                   <thead>
-                     </tr>
+                     
                   </thead>
                   <tbody>
                      <tr>
                         <td>
                            合計
-                        <td id="sum" class="ui teal">
-                           ¥ 12,000
-                        </td>
+                        </td><td id="sum" class="ui teal">¥ 12,000</td>
                      </tr>
                      <tr>
                         <td>
                            差額
-                        <td id="balance">
-                           ¥ 0
-                        </td>
+                        </td><td id="balance">¥ 0</td>
                      </tr>
                   </tbody>
-               </table>
-               
-               <div class="chart">
-                     <a data-num=0 data-content="¥2,400" class="bar" style="width: 33.333%;"></a><a data-num=1 data-content="¥9,600" class="bar" style="width: 66.666%;opacity: 0.5;"></a>
-               </div>
-               </div>
+               </table><div class="chart"><div class="bar" data-num="0" data-content="¥ 4,000" style="width: 33.3333%; opacity: 1;"></div><div class="bar" data-num="1" data-content="¥ 8,000" style="width: 66.6667%; opacity: 0.5;"></div></div></div><div class="ui center aligned grid">
 
-            </div>
-            
+           </div>
+
          </div>
       </div>
+
       <div id="result-table"></div>
       <!-- <div class="ui segment" id="send" style="word-wrap:break-word;"></div> -->
       <!-- <div class="ui segment" id="ret" style="word-wrap:break-word;"></div> -->
@@ -336,13 +313,14 @@ function makecard(member,coef,charge,balance){
           bar_one.appendTo(chart_container)
 
           // $("#summary_board > .cost_stacker > span > .label[data-num="+i+"]")
-          stack_label.hover(function(){
-            // bar_one.popup("show");
-            bar_one.popup({inline: true,position: "top center"}).popup("show");
-            // bar_one.show()
-          },function(){
-            bar_one.popup("hide");
+          stack_label
+          .popup({
+            position : 'top center',
+            target   : bar_one,
+            content  : bar_one.attr("data-content")
           });
+
+         
       })
 
       // 合計と差額の再描画
@@ -450,11 +428,7 @@ $('#exec').click(function () {
            })
         }
         if (i!=0){
-          // card.css('opacity', 0.2);
           card.hide()
-          
-
-
         }
 
          $("#summary_board").append(card)
@@ -497,25 +471,22 @@ $('#exec').click(function () {
     },
     complete: function () {
       $("#summary_board").removeClass("loading")
-
-      // $('.bar').popup({inline: true,position: "top center"});
     }
   });
 });
-$("#summary_board > .cost_stacker > span > .label[data-num=0]").hover(function(){
-            $('.bar[data-num=0]').popup({inline: true,position: "bottom center"}).popup("show");
-          },function(){
-            $('.bar[data-num=0]').popup("hide");
-          });
-
-$("#summary_board > .cost_stacker > span > .label[data-num=1]").hover(function(){
-            $('.bar[data-num=1]').popup({inline: true,position: "bottom center"}).popup("show");
-          },function(){
-            $('.bar[data-num=1]').popup("hide");
-          });
 
 
-
+$(".cost_stacker > span > div").each(function(i){
+  if ($(this).attr("data-num")){
+    var target=$(".bar[data-num="+$(this).attr("data-num")+"]")
+    $(this)
+    .popup({
+      position : 'top center',
+      target   : target,
+      content  : target.attr("data-content")
+    });
+  }
+})
 
 
 $('.ui.accordion').accordion();

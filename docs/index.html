@@ -132,8 +132,29 @@
             text-align: center;
           }
 
+          .ui.dimmer {
+            background-color: rgba(0, 0, 0, 0.5);
+          }
+          .overlay{
+            position: absolute;
+            width: 100%;
+            z-index: 10;
+            background-color: rgba(0,0,0,0);
+            bottom: 0;
+            position: fixed;
+
+          }
+          .notify.message{
+            border-radius: 0px !important;
+            max-width: 400px !important;
+            background-color: rgb(50,50,50) !important;
+            color: white !important;
+            margin:3 auto;
+          }
       </style>
    </head>
+   <body>
+   <div class="nortify container overlay"></div>
    <div class="ui content">
    <nav class="ui borderless menu" style="height: 5em !important;">
       <div class="ui container">
@@ -248,10 +269,28 @@
                      </tr>
                   </tbody>
                </table><div class="chart"><div class="bar" data-num="0" data-content="¥ 4,000" style="width: 33.3333%; opacity: 1;"></div><div class="bar" data-num="1" data-content="¥ 8,000" style="width: 66.6667%; opacity: 0.5;"></div></div></div><div class="ui center aligned grid">
-
            </div>
-
          </div>
+         <div class="cost_stacker help" ><a id="feedback" href="javascript:void(0)">フィードバックを送信</a></div>
+
+        <div class="ui tiny modal" id="feedbackmodal">
+          <div class="ui inverted dimmer" id="slavedeletemodal-dimmer">
+            <div class="ui text loader"></div>
+          </div>
+          <div class="header">フィードバックの送信 </div>
+          <div class="content">
+            <div class="ui form">
+              <div class="field">
+                <textarea id="feedbackform" placeholder="問題点やご意見をご記入ください"></textarea>
+              </div>
+            </div>
+          </div>
+          <div class="actions">
+            <div class="ui button deny">キャンセル</div>
+            <div class="ui green button positive">送信</div>
+          </div>
+        </div>
+
       </div>
 
       <div id="result-table"></div>
@@ -263,6 +302,62 @@
    </body>
 </html>
 <script type="text/javascript">
+
+  function nortify(nortifystr, closetime=2000){
+    var nortifydom = $('<div class="ui notify message hidden">')
+    var message = $("<p>")
+    message.text(nortifystr)
+    message.appendTo(nortifydom)
+    nortifydom.appendTo($('.nortify.container'))
+    nortifydom.transition('fade down')
+    nortifydom.delay(closetime).queue(function(next){
+      $(this).transition('fade down')
+      next();
+    })
+  }
+  function updatemodalpost(){
+    if($("#feedbackform").val() != '') {
+       $("#feedbackmodal > div.actions > div.ui.green.button.positive").removeClass('disabled');
+        }
+    else
+       $("#feedbackmodal > div.actions > div.ui.green.button.positive").addClass('disabled');
+  }
+
+  $(document).ready(function() {
+     updatemodalpost();
+     $("#feedbackform").keyup(function() {updatemodalpost();});
+   });
+
+  $('#feedback').click(function () {
+    $("#feedbackmodal").modal({
+      onApprove: function (feedbackmodal) {
+        $(this).dimmer('show')
+        var data = {
+          "message": $("#feedbackform").val()
+        }
+        $.ajax({
+          type: "post",
+          url: "https://w8jvwqg1al.execute-api.us-east-1.amazonaws.com/default/sendmail",
+          data: JSON.stringify(data),
+          dataType: "json",
+          success: function (json_data) {
+            nortify("フィードバックにご協力いただきありがとうございました。")
+          },
+          error: function () {
+            nortify("送信中にエラーが発生しました。")
+          },
+          complete: function () {
+            console.log(feedbackmodal)
+            $("#feedbackmodal").modal("hide")
+            $("#feedbackmodal").dimmer('hide')
+            $("#feedbackform").val("")
+            updatemodalpost();
+          }
+        });
+      return false; // prevent close modal
+      }
+    }).modal("show");
+  });
    $(".selection > .button").click(function () {
   $(this).siblings().each(function () {
     $(this).removeClass("active");

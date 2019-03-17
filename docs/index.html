@@ -242,13 +242,6 @@
             </form>
                    </div>
                    <div class="eight wide column">
-                    <div class="ui negative message" hidden id="error">
-            <div class="header">
-              エラー
-            </div>
-            <p>ネットワークに接続できません。またはAPIが一時的に利用できない状態にあります。
-          </p></div>
-
 
 <div class="cost_stacker help"><span class="item"><div class="ui gray image label">人数<div class="detail">一人あたり支払額</div></div></span></div>
 
@@ -562,7 +555,7 @@ $('#exec').click(function () {
     },
     error: function () {
       $("#error").show()
-      console.log("a")
+      nortify("リソースに接続できません。一時的に利用できないか、恒久的に凍結されています。")
     },
     complete: function () {
       $("#summary_board").removeClass("loading")

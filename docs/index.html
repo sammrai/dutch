@@ -287,7 +287,7 @@
           </div>
           <div class="actions">
             <div class="ui button deny">キャンセル</div>
-            <div class="ui green button positive">送信</div>
+            <div class="ui teal button ok">送信</div>
           </div>
         </div>
 
@@ -317,10 +317,10 @@
   }
   function updatemodalpost(){
     if($("#feedbackform").val() != '') {
-       $("#feedbackmodal > div.actions > div.ui.green.button.positive").removeClass('disabled');
+       $("#feedbackmodal .ok").removeClass('disabled');
         }
     else
-       $("#feedbackmodal > div.actions > div.ui.green.button.positive").addClass('disabled');
+       $("#feedbackmodal .ok").addClass('disabled');
   }
 
   $(document).ready(function() {

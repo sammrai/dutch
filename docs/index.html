@@ -178,11 +178,16 @@
             <form class="ui form">
                <div class="field">
                   <label>金額</label>
-                  <div class="ui labeled input">
-                     <div class="ui label">
-                        ¥
-                     </div>
-                     <input type="number" placeholder="12000" id="charge" value="12000" >
+                  <div class="ui right labeled input">
+                    <input type="number" placeholder="12000" id="charge" value="12000" >
+                    <div class="ui dropdown label" id="chargeselect">
+                      <div class="text">円/全員</div>
+                      <i class="dropdown icon"></i>
+                      <div class="menu">
+                        <div data-value=0 class="item selected">円/全員</div>
+                        <div data-value=1 class="item">円/1人</div>
+                      </div>
+                    </div>
                   </div>
                </div>
                <div class="field">
@@ -243,8 +248,7 @@
                    </div>
                    <div class="eight wide column">
 
-<div class="cost_stacker help"><span class="item"><div class="ui gray image label">人数<div class="detail">一人あたり支払額</div></div></span></div>
-
+            <div class="cost_stacker help"><span class="item"><div class="ui gray image label">人数<div class="detail">一人あたり支払額</div></div></span></div>
             <div class="ui segment" id="summary_board"><div class="summary_card"><div class="cost_stacker"><span class="item"><div class="ui teal image label" data-num="0" >2<div class="detail">¥ 2,000</div></div></span><span class="item"><div class="ui teal image label" data-num="1" style="opacity: 0.5;">8<div class="detail">¥ 1,000</div></div></span></div><table class="ui very basic table unstackable summary">
                   <thead>
                      
@@ -407,8 +411,6 @@ function makecard(member,coef,charge,balance){
             target   : bar_one,
             content  : bar_one.attr("data-content")
           });
-
-         
       })
 
       // 合計と差額の再描画
@@ -468,8 +470,12 @@ $('#exec').click(function () {
   $("#member a").each(function (i) {
     members.push(Number($(this).attr("data-value")));
   });
+  var charge;
+  if ( $("#chargeselect .item.selected").data('value')) charge = Number($("#charge").val()) * members.reduce((a, b) => a + b, 0);
+  else charge = Number($("#charge").val());
+
   var data = {
-    "charge": Number($("#charge").val()),
+    "charge": charge,
     "members": members,
     "candidacy": true
   }
@@ -576,7 +582,7 @@ $(".cost_stacker > span > div").each(function(i){
   }
 })
 
-
 $('.ui.accordion').accordion();
+$('.ui.dropdown').dropdown();
 
 </script>
